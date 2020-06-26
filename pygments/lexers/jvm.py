@@ -265,6 +265,7 @@ class ScalaLexer(RegexLexer):
 
     idrest = u'%s(?:%s|[0-9])*(?:(?<=_)%s)?' % (letter, letter, op)
     letter_letter_digit = u'%s(?:%s|\\d)*' % (letter, letter)
+    identifier = u'%s|%s|`[^`]+`' % (idrest, op)
 
     tokens = {
         'root': [
@@ -273,13 +274,22 @@ class ScalaLexer(RegexLexer):
             (r'[^\S\n]+', Text),
             include('comments'),
             (u'@%s' % idrest, Name.Decorator),
-            (u'(abstract|ca(?:se|tch)|d(?:ef|o)|e(?:lse|xtends)|'
+            (r'(va[lr])(\s+)(%s)' % identifier,
+             bygroups(Keyword, Text, Name), 'valsignature'),
+            (u'(def)(\\s+)(%s)?' % identifier,
+             bygroups(Keyword, Text, Name.Function), 'defsignature'),
+            (r'(def)(\s+)', bygroups(Keyword, Text), 'defsignature'), # inline
+            (u'(given)(\\s+)(%s)?' % identifier,
+             bygroups(Keyword, Text, Name), 'templatesignature'),
+            (u'(extension)(\\s+)(%s)?(\\s*)(on)?' % idrest,
+             bygroups(Keyword, Text, Name, Text, Keyword), 'templatesignature'),
+            (u'(a(?:bstract|s)|ca(?:se|tch)|do|e(?:lse|xtends|num|nd)|'
              u'f(?:inal(?:ly)?|or(?:Some)?)|i(?:f|mplicit)|'
              u'lazy|match|new|override|pr(?:ivate|otected)'
              u'|re(?:quires|turn)|s(?:ealed|uper)|'
-             u't(?:h(?:is|row)|ry)|va[lr]|w(?:hile|ith)|yield)\\b|'
+             u't(?:h(?:en|is|row)|ry)|using|w(?:hile|ith)|yield)\\b|'
              u'(<[%:-]|=>|>:|[#=@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
-            (u':(?!%s)' % op, Keyword, 'type'),
+            (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
             (r'(true|false|null)\b', Keyword.Constant),
             (r'(import|package)(\s+)', bygroups(Keyword, Text), 'import'),
@@ -304,28 +314,64 @@ class ScalaLexer(RegexLexer):
             (r'[0-9]+L?', Number.Integer),
             (r'\n', Text)
         ],
+        'valsignature': [
+            (r'\s+', Text),
+            (u':', Operator, ('#pop', 'type')),
+            (r'=', Operator, '#pop'),
+        ],
+        'defsignature': [
+            (r'\s+', Text),
+            (r'\(', Operator, 'arglist'),
+            (r'\[', Operator, 'typeparam'),
+            (r':', Operator, ('#pop', 'type')),
+            (r'\.', Operator), # Collective Extensions shorthand
+            (r'[\{=]', Operator, '#pop'),
+            (identifier, Name.Function),
+            include('comments'),
+        ],
+        'templatesignature': [
+            (r'\s+', Text),
+            (r'\(', Operator, 'arglist'),
+            (r'\[', Operator, 'typeparam'),
+            (r'(as)(\s+)', bygroups(Keyword, Text), 'type'),
+            (r'[\{=:]', Operator, '#pop'),
+            include('comments'),
+        ],
+        'arglist': [
+            (r'\s+', Text),
+            (r':', Operator, 'type'),
+            (r',', Operator),
+            (r'\)', Operator, '#pop'),
+            (u'(implicit|using)(\\s+)(%s)(\\s*)(:)' % identifier,
+             bygroups(Keyword, Text, Name, Text, Operator), 'type'),
+            (u'(implicit|using)(\\s+)', bygroups(Keyword, Text), 'type'),
+            (identifier, Name),
+            include('comments'),
+            include('root') # for default values
+        ],
         'class': [
-            (u'(%s|%s|`[^`]+`)(\\s*)(\\[)' % (idrest, op),
+            (u'(%s)(\\s*)(\\[)' % identifier,
              bygroups(Name.Class, Text, Operator), ('#pop', 'typeparam')),
+            (u'(%s)(\\s*)(\\()' % identifier,
+             bygroups(Name.Class, Text, Operator), ('#pop', 'arglist')),
             (r'\s+', Text),
             include('comments'),
             (r'\{', Operator, '#pop'),
-            (r'\(', Operator, '#pop'),
-            (u'%s|%s|`[^`]+`' % (idrest, op), Name.Class, '#pop'),
+            (r'\(', Operator, 'arglist'),
+            (identifier, Name.Class, '#pop'),
         ],
         'type': [
             (r'\s+', Text),
             include('comments'),
-            (r'<[%:]|>:|[#_]|\bforSome\b|\btype\b', Keyword),
-            (u'([,);}]|=>|=|\u21d2)(\\s*)', bygroups(Operator, Text), '#pop'),
+            (r'&|\||<[%:]|>:|[#_]|\bforSome\b|\btype\b', Keyword),
+            (u'(=>|=|\u21d2)(\\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
             (r'[({]', Operator, '#push'),
-            (u'((?:%s|%s|`[^`]+`)(?:\\.(?:%s|%s|`[^`]+`))*)(\\s*)(\\[)' %
-             (idrest, op, idrest, op),
+            (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
              bygroups(Keyword.Type, Text, Operator), ('#pop', 'typeparam')),
-            (u'((?:%s|%s|`[^`]+`)(?:\\.(?:%s|%s|`[^`]+`))*)(\\s*)$' %
-             (idrest, op, idrest, op),
+            (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
              bygroups(Keyword.Type, Text), '#pop'),
-            (u'\\.|%s|%s|`[^`]+`' % (idrest, op), Keyword.Type)
+            (u'\\.|%s' % identifier, Keyword.Type),
+            default('#pop')
         ],
         'typeparam': [
             (r'\s+', Text),
@@ -334,7 +380,7 @@ class ScalaLexer(RegexLexer):
             (u'<[%:]|=>|>:|[#_\u21D2]|\bforSome\b|\btype\b', Keyword),
             (r'([\])}])', Operator, '#pop'),
             (r'[(\[{]', Operator, '#push'),
-            (u'\\.|%s|%s|`[^`]+`' % (idrest, op), Keyword.Type)
+            (u'\\.|%s' % identifier, Keyword.Type)
         ],
         'comments': [
             (r'//.*?\n', Comment.Single),
