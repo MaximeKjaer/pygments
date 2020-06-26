@@ -281,7 +281,9 @@ class ScalaLexer(RegexLexer):
             (r'(def)(\s+)', bygroups(Keyword, Text), 'defsignature'), # inline
             (u'(given)(\\s+)(%s)?' % identifier,
              bygroups(Keyword, Text, Name), 'templatesignature'),
-            (u'(extension)(\\s+)(%s)?(\\s*)(on)?' % idrest,
+            (r'(extension)(\s+)(on)',
+             bygroups(Keyword, Text, Keyword), 'templatesignature'),
+            (u'(extension)(\\s+)(%s)(\\s*)(on)?' % identifier,
              bygroups(Keyword, Text, Name, Text, Keyword), 'templatesignature'),
             (u'(a(?:bstract|s)|ca(?:se|tch)|do|e(?:lse|xtends|num|nd)|'
              u'f(?:inal(?:ly)?|or(?:Some)?)|i(?:f|mplicit)|'
