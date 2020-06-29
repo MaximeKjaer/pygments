@@ -24,6 +24,8 @@ export given a.{x, y} // Test comment
 export a._ // Test comment
 export a.x // Test comment
 export a.x.y.z // Test comment
+  export scanUnit.scan
+  export printUnit.{status => _, _}
 
 // Literals
 true false null
@@ -41,6 +43,43 @@ true false null
 "test" "\"test\"" "'test'" // comment
 """test: one ", two "", three """""" // comment
 't' '"' '\''
+
+// Declarations
+package
+package com
+package com.example
+
+package object x {}
+package object y:
+
+val x: Int
+val y: Int = 1
+val z = 1
+var x: Int
+var y: Int = 1
+var z = 1
+
+def abs[T](x: Int): Int = if x >= 0 then new x else now -x
+def abs(x: Int) = if x >= 0 then new x else now -x
+def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???
+def sum[A](xs: List[A])(implicit Monoid[A]): A = ???
+def sum[A](xs: List[A])(using m: Monoid[A]): A = ???
+def sum[A](xs: List[A])(using Monoid[A]): A = ???
+
+trait X {}
+object X
+class Y
+open object X:
+open class Y:
+case object X
+case class Y()
+
+type X
+type X <: Y
+type X = Y
+type X[Y] = Y with Z
+
+val open = true // 'open' is a soft keyword, should not be highlighted as keyword here
 
 // Storage modifiers
 private object a {}
@@ -62,13 +101,8 @@ opaque type o = Unit
 @volatile @transient @native
 override def p = ???
 
-def abs[T](x: Int): Int = if x >= 0 then new x else now -x
-def abs(x: Int) = if x >= 0 then new x else now -x
-def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???
-def sum[A](xs: List[A])(implicit Monoid[A]): A = ???
-def sum[A](xs: List[A])(using m: Monoid[A]): A = ???
-def sum[A](xs: List[A])(using Monoid[A]): A = ???
-
+// Meta bounds
+<% =:= <:< <%< >: <:
 
 given Ord[Int] { 
   def compare(x: List[T], y: List[T]) = ??? 

@@ -269,42 +269,52 @@ class ScalaLexer(RegexLexer):
 
     tokens = {
         'root': [
+            (r'[^\S\n]+', Text),
+            include('comments'),
+
             # Shebang
             (r'^#!([^\n]*)$', Comment.Hashbang),
 
             # Imports and exports
             (r'(import|export)(\s+)', bygroups(Keyword, Text), 'import'),
             
-            # Objects and classes
-            # TODO package
-            (r'(class|trait|object)(\s+)', bygroups(Keyword, Text), 'class'),
+            # Declarations
+            (r'(package)(\s+)(object)(\s+)',
+             bygroups(Keyword, Text, Keyword, Text), 'class'),
+            (r'(package)(\s+)', bygroups(Keyword, Text), 'package-name'),
+            (r'(case|open)(\s+)(class|object)(\s+)',
+             bygroups(Keyword, Text, Keyword, Text), 'class'),
+            (r'(class|object)(\s+)', bygroups(Keyword, Text), 'class'),
+            (r'(trait)(\s+)', bygroups(Keyword, Text), 'class'),
+            (r'(val|var)(\s+)', bygroups(Keyword, Text), 'val'),
+            (r'(def)(\s+)', bygroups(Keyword, Text), 'def'),
+            (r'(type)(\s+)', bygroups(Keyword, Text), 'typedef'),
 
-            (r'[^\S\n]+', Text),
-            include('comments'),
+            # Extensions
+            (r'(extension)(\s+)', bygroups(Keyword, Text), 'extension'),
+            
+            # Annotations
             (u'@%s' % idrest, Name.Decorator),
-            (r'(va[lr])(\s+)(%s)' % identifier,
-             bygroups(Keyword, Text, Name), 'valsignature'),
-            (u'(def)(\\s+)(%s)?' % identifier,
-             bygroups(Keyword, Text, Name.Function), 'defsignature'),
-            (r'(def)(\s+)', bygroups(Keyword, Text), 'defsignature'), # inline
-            (u'(given)(\\s+)(%s)?' % identifier,
-             bygroups(Keyword, Text, Name), 'templatesignature'),
-            (r'(extension)(\s+)(on)',
-             bygroups(Keyword, Text, Keyword), 'templatesignature'),
-            (u'(extension)(\\s+)(%s)(\\s*)(on)?' % identifier,
-             bygroups(Keyword, Text, Name, Text, Keyword), 'templatesignature'),
 
             # Storage modifiers
             (r'(private|protected)(?:(\[)(\S+)(\]))?',
              bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),
             (r'\b(synchronized|abstract|final|lazy|sealed|implicit|given|enum|'
              r'inline|opaque|override|@transient|@native)\b', Keyword),
+
+            # Meta bounds
+            (r'<%|=:=|<:<|<%<|>:|<:', Operator),
+
+            # Inheritance
+            (u'(extends|with|derives)(\\s+)(%s)' % identifier,
+             bygroups(Keyword, Text, Name.Class)),
+
             (u'(abstract|as|case|catch|derives|do|else|enum|end|export|extends'
              u'finally|final|forSome|for|given|if|implicit|lazy|match|new'
              u'override|open|opaque|requires|return|sealed'
              u'super|then|this|throw|try|transparent|using|while|with|'
              u'yield)\\b|'
-             u'(<[%:-]|=>|>:|[#=@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
+             u'(=>|[#@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
 
@@ -321,7 +331,6 @@ class ScalaLexer(RegexLexer):
             (r'"(\\\\|\\"|[^"])*"', String),
             (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char),
 
-            (r'(type)(\s+)', bygroups(Keyword, Text), 'type'),
             (u"'%s" % idrest, Text.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
             (r'[fs]"', String, 'interpstring'),  # interpolated strings
@@ -336,30 +345,47 @@ class ScalaLexer(RegexLexer):
             
             (r'\n', Text)
         ],
-        'valsignature': [
+        'import': [
+            (r'(\{|\}|=>|,)', Operator),
+            (r'(given)(?=\s)', Keyword),
+            include('package-name'),
+        ],
+        'package-name': [
+            (r'(?<=[\n;:])', Text, '#pop'),
+            (r'[^\S\n]+', Text),
+            include('comments'),
+            (r'\.', Punctuation),
+            (identifier, Name.Namespace)
+        ],
+        'val': [
             (r'\s+', Text),
-            (u':', Operator, ('#pop', 'type')),
+            (u':', Operator, ('#pop', 'type')), # Must pop in case it is abstract
             (r'=', Operator, '#pop'),
+            (identifier, Name.Variable),
         ],
-        'defsignature': [
+        'def': [
             (r'\s+', Text),
-            (r'\(', Operator, 'arglist'),
-            (r'\[', Operator, 'typeparam'),
-            (r':', Operator, ('#pop', 'type')),
-            (r'\.', Operator), # Collective Extensions shorthand
-            (r'[\{=]', Operator, '#pop'),
-            (identifier, Name.Function),
             include('comments'),
+            (r'\(', Punctuation, 'parameter-list'),
+            (r'\[', Punctuation, 'typeparam'),
+            (r':', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
+            (r'\.', Punctuation), # Collective Extensions shorthand
+            (r'\{', Punctuation, '#pop'),
+            (r'(=)(\s+)', bygroups(Operator, Text), '#pop'), # Space to avoid matching 'def ==(that: X)'
+            (identifier, Name.Function),            
         ],
-        'templatesignature': [
+        'extension': [
             (r'\s+', Text),
-            (r'\(', Operator, 'arglist'),
-            (r'\[', Operator, 'typeparam'),
+            include('comments'),
+            (r'\(', Punctuation, 'parameter-list'),
+            (r'\[', Punctuation, 'typeparam'),
+            (r'(on)(\s+)', bygroups(Keyword, Text)),
             (r'(as)(\s+)', bygroups(Keyword, Text), 'type'),
-            (r'[\{=:]', Operator, '#pop'),
-            include('comments'),
+            (r'[\{=:]', Punctuation, '#pop'),
+            (identifier, Name.Class),
+            (r'\n', Text, '#pop'), # New proposed syntax
         ],
-        'arglist': [
+        'parameter-list': [
             (r'\s+', Text),
             (r':', Operator, 'type'),
             (r',', Operator),
@@ -372,14 +398,11 @@ class ScalaLexer(RegexLexer):
             include('root') # for default values
         ],
         'class': [
-            (u'(%s)(\\s*)(\\[)' % identifier,
-             bygroups(Name.Class, Text, Operator), ('#pop', 'typeparam')),
-            (u'(%s)(\\s*)(\\()' % identifier,
-             bygroups(Name.Class, Text, Operator), ('#pop', 'arglist')),
             (r'\s+', Text),
             include('comments'),
-            (r'\{', Operator, '#pop'),
-            (r'\(', Operator, 'arglist'),
+            (r'[{:;]', Punctuation, '#pop'),
+            (r'\[', Punctuation, 'typeparam'),
+            (r'\(', Punctuation, 'parameter-list'),
             (identifier, Name.Class, '#pop'),
         ],
         'type': [
@@ -393,6 +416,17 @@ class ScalaLexer(RegexLexer):
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
              bygroups(Keyword.Type, Text), '#pop'),
             (u'\\.|%s' % identifier, Keyword.Type),
+            default('#pop')
+        ],
+        'typedef': [
+            (r'\s+', Text),
+            include('comments'),
+            (u'(%s)(\\s*)(\\[)' % identifier,
+             bygroups(Name.Type, Text, Punctuation), 'typeparam'),
+            (u'(%s)(\\s*)(=|<:|>:)' % identifier,
+             bygroups(Name.Type, Text, Operator), ('#pop', 'type')),
+            (r'=|<:|>:', Operator, ('#pop', 'type')),
+            (identifier, Name.Type, '#pop'),
             default('#pop')
         ],
         'typeparam': [
@@ -413,15 +447,6 @@ class ScalaLexer(RegexLexer):
             (r'/\*', Comment.Multiline, '#push'),
             (r'\*/', Comment.Multiline, '#pop'),
             (r'[*/]', Comment.Multiline)
-        ],
-        'import': [
-            (r'(?<=[\n;])', Text, '#pop'),
-            include('comments'),
-            (r'(given)(?=\s)', Keyword),
-            (r'\.', Punctuation),
-            (r'(\{|\}|=>|,)', Operator),
-            (r'\s+', Text),
-            (identifier, Name.Namespace),
         ],
         'interpstringcommon': [
             (r'[^"$\\]+', String),
