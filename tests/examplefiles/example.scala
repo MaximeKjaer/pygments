@@ -1,3 +1,5 @@
+#!/usr/bin/scala
+
 // Imports
 import // This is incorrect Scala but can still be highlighted correctly
 import a.{x => y} // Test comment

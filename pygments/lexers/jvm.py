@@ -269,6 +269,9 @@ class ScalaLexer(RegexLexer):
 
     tokens = {
         'root': [
+            # Shebang
+            (r'^#!([^\n]*)$', Comment.Hashbang),
+
             # method names
             (r'(class|trait|object)(\s+)', bygroups(Keyword, Text), 'class'),
             (r'[^\S\n]+', Text),
