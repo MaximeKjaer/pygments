@@ -285,11 +285,11 @@ class ScalaLexer(RegexLexer):
              bygroups(Keyword, Text, Keyword), 'templatesignature'),
             (u'(extension)(\\s+)(%s)(\\s*)(on)?' % identifier,
              bygroups(Keyword, Text, Name, Text, Keyword), 'templatesignature'),
-            (u'(a(?:bstract|s)|ca(?:se|tch)|do|e(?:lse|xtends|num|nd)|'
-             u'f(?:inal(?:ly)?|or(?:Some)?)|i(?:f|mplicit)|'
-             u'lazy|match|new|override|pr(?:ivate|otected)'
-             u'|re(?:quires|turn)|s(?:ealed|uper)|'
-             u't(?:h(?:en|is|row)|ry)|using|w(?:hile|ith)|yield)\\b|'
+            (u'(abstract|as|case|catch|derives|do|else|enum|end|export|extends'
+             u'finally|final|forSome|for|given|if|implicit|lazy|match|new'
+             u'override|open|opaque|private|protected|requires|return|sealed'
+             u'super|then|this|throw|try|transparent|using|while|with|'
+             u'yield)\\b|'
              u'(<[%:-]|=>|>:|[#=@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),

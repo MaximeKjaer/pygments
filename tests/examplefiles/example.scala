@@ -165,3 +165,29 @@ def f(x: Resettable & Growable[String]) = {
   x.reset()
   x.add("first")
 }
+
+opaque type Logarithm = Double
+
+open class Writer[T] {
+
+  /** Sends to stdout, can be overridden */
+  def send(x: T) = println(x)
+
+  /** Sends all arguments using `send` */
+  def sendAll(xs: T*) = xs.foreach(send)
+}
+
+class Copier {
+  private val printUnit = new Printer { type PrinterType = InkJet }
+  private val scanUnit = new Scanner
+
+  export scanUnit.scan
+  export printUnit.{status => _, _}
+
+  def status: List[String] = printUnit.status ++ scanUnit.status
+}
+
+enum Tree[T] derives Eq, Ordering, Show {
+  case Branch[T](left: Tree[T], right: Tree[T])
+  case Leaf[T](elem: T)
+}
