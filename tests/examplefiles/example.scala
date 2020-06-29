@@ -58,6 +58,9 @@ val z = 1
 var x: Int
 var y: Int = 1
 var z = 1
+val (a, b) = (1, 2)
+val Some(a) = Some(1, 2)
+val Test.Some(a) = Test.Some(1, 2)
 
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x
 def abs(x: Int) = if x >= 0 then new x else now -x
