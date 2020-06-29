@@ -12,6 +12,19 @@ import a._ // Test comment
 import a.x // Test comment
 import a.x.y.z // Test comment
 
+// Exports
+export // This is incorrect Scala but can still be highlighted correctly
+export a.{x => y} // Test comment
+export a.{x => } // This is incorrect Scala but can still be highlighted correctly
+export a.{x => `test-name`} // Test comment
+export given
+export given a // Test comment
+export given a.a // Test comment
+export given a.{x, y} // Test comment
+export a._ // Test comment
+export a.x // Test comment
+export a.x.y.z // Test comment
+
 // Literals
 true false null
 1 2 3 4

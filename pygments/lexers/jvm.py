@@ -272,8 +272,13 @@ class ScalaLexer(RegexLexer):
             # Shebang
             (r'^#!([^\n]*)$', Comment.Hashbang),
 
-            # method names
+            # Imports and exports
+            (r'(import|export)(\s+)', bygroups(Keyword, Text), 'import'),
+            
+            # Objects and classes
+            # TODO package
             (r'(class|trait|object)(\s+)', bygroups(Keyword, Text), 'class'),
+
             (r'[^\S\n]+', Text),
             include('comments'),
             (u'@%s' % idrest, Name.Decorator),
@@ -316,7 +321,6 @@ class ScalaLexer(RegexLexer):
             (r'"(\\\\|\\"|[^"])*"', String),
             (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char),
 
-            (r'(import|package)(\s+)', bygroups(Keyword, Text), 'import'),
             (r'(type)(\s+)', bygroups(Keyword, Text), 'type'),
             (u"'%s" % idrest, Text.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
