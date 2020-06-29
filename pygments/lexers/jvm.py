@@ -305,8 +305,8 @@ class ScalaLexer(RegexLexer):
 
             # Literals
             (r'(true|false|null)\b', Keyword.Constant),
-            (r'0[xX][0-9a-fA-F]*', Number.Hex),
-            (r'([0-9]+\.[0-9]+|\.[0-9]+)([eE][+-]?[0-9]+)?[fFdD]?',
+            (r'0[xX][0-9a-fA-F_]*', Number.Hex),
+            (r'([0-9][0-9_]*\.[0-9][0-9_]*|\.[0-9][0-9_])([eE][+-]?[0-9][0-9_]*)?[fFdD]?',
              Number.Float),
             (r'[0-9]+([eE][+-]?[0-9]+)?[fFdD]', Number.Float),
             (r'[0-9]+([eE][+-]?[0-9]+)[fFdD]?', Number.Float),
