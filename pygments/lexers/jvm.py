@@ -293,12 +293,22 @@ class ScalaLexer(RegexLexer):
              u'(<[%:-]|=>|>:|[#=@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
+
+            # Literals
             (r'(true|false|null)\b', Keyword.Constant),
-            (r'(import|package)(\s+)', bygroups(Keyword, Text), 'import'),
-            (r'(type)(\s+)', bygroups(Keyword, Text), 'type'),
+            (r'0[xX][0-9a-fA-F]*', Number.Hex),
+            (r'([0-9]+\.[0-9]+|\.[0-9]+)([eE][+-]?[0-9]+)?[fFdD]?',
+             Number.Float),
+            (r'[0-9]+([eE][+-]?[0-9]+)?[fFdD]', Number.Float),
+            (r'[0-9]+([eE][+-]?[0-9]+)[fFdD]?', Number.Float),
+            (r'[0-9]+(l|L|ul|UL)', Number.Integer.Long),
+            (r'[0-9]+', Number.Integer),
             (r'""".*?"""(?!")', String),
             (r'"(\\\\|\\"|[^"])*"', String),
             (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char),
+
+            (r'(import|package)(\s+)', bygroups(Keyword, Text), 'import'),
+            (r'(type)(\s+)', bygroups(Keyword, Text), 'type'),
             (u"'%s" % idrest, Text.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
             (r'[fs]"', String, 'interpstring'),  # interpolated strings
@@ -310,10 +320,7 @@ class ScalaLexer(RegexLexer):
             (r'\[', Operator, 'typeparam'),
             (r'[(){};,.#]', Operator),
             (op, Operator),
-            (r'([0-9][0-9]*\.[0-9]*|\.[0-9]+)([eE][+-]?[0-9]+)?[fFdD]?',
-             Number.Float),
-            (r'0x[0-9a-fA-F]+', Number.Hex),
-            (r'[0-9]+L?', Number.Integer),
+            
             (r'\n', Text)
         ],
         'valsignature': [

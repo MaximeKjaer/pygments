@@ -10,6 +10,21 @@ import a._ // Test comment
 import a.x // Test comment
 import a.x.y.z // Test comment
 
+// Literals
+true false null
+1 2 3 4
+1L 1l 1ul 1UL
+3.0 12.345
+3f 3.0f 3F 3.0F
+3d 3.0d 3D 3.0D
+1e12 1e+34 1e-56 1e12f 1e+34f 1e-56f 1e12d 1e+34d 1e-56d
+1E12 1E+34 1E-56 1E12f 1E+34f 1E-56f 1E12d 1E+34d 1E-56d
+0x // Can still be highlighted correctly!
+0x1234567890ABCDEF
+"test" "\"test\"" "'test'" // comment
+"""test: one ", two "", three """""" // comment
+'t' '"' '\''
+
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x
 def abs(x: Int) = if x >= 0 then new x else now -x
 def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???
