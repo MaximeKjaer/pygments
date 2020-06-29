@@ -1,3 +1,15 @@
+// Imports
+import // This is incorrect Scala but can still be highlighted correctly
+import a.{x => y} // Test comment
+import a.{x => } // This is incorrect Scala but can still be highlighted correctly
+import a.{x => `test-name`} // Test comment
+import a.given // Test comment
+import a.{given a} // Test comment
+import a.{x, y} // Test comment
+import a._ // Test comment
+import a.x // Test comment
+import a.x.y.z // Test comment
+
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x
 def abs(x: Int) = if x >= 0 then new x else now -x
 def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???

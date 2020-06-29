@@ -395,7 +395,13 @@ class ScalaLexer(RegexLexer):
             (r'[*/]', Comment.Multiline)
         ],
         'import': [
-            (u'(%s|\\.)+' % idrest, Name.Namespace, '#pop')
+            (r'(?<=[\n;])', Text, '#pop'),
+            include('comments'),
+            (r'(given)(?=\s)', Keyword),
+            (r'\.', Punctuation),
+            (r'(\{|\}|=>|,)', Operator),
+            (r'\s+', Text),
+            (identifier, Name.Namespace),
         ],
         'interpstringcommon': [
             (r'[^"$\\]+', String),
