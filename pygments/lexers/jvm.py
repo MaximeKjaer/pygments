@@ -288,9 +288,15 @@ class ScalaLexer(RegexLexer):
              bygroups(Keyword, Text, Keyword), 'templatesignature'),
             (u'(extension)(\\s+)(%s)(\\s*)(on)?' % identifier,
              bygroups(Keyword, Text, Name, Text, Keyword), 'templatesignature'),
+
+            # Storage modifiers
+            (r'(private|protected)(?:(\[)(\S+)(\]))?',
+             bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),
+            (r'\b(synchronized|abstract|final|lazy|sealed|implicit|given|enum|'
+             r'inline|opaque|override|@transient|@native)\b', Keyword),
             (u'(abstract|as|case|catch|derives|do|else|enum|end|export|extends'
              u'finally|final|forSome|for|given|if|implicit|lazy|match|new'
-             u'override|open|opaque|private|protected|requires|return|sealed'
+             u'override|open|opaque|requires|return|sealed'
              u'super|then|this|throw|try|transparent|using|while|with|'
              u'yield)\\b|'
              u'(<[%:-]|=>|>:|[#=@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),

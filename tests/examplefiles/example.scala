@@ -27,6 +27,26 @@ true false null
 """test: one ", two "", three """""" // comment
 't' '"' '\''
 
+// Storage modifiers
+private object a {}
+private[com] object b {}
+private[com.example] object c {}
+protected object d {}
+protected[com] object e {}
+protected[com.example] object f {}
+synchronized {}
+abstract class g {}
+final val h = ???
+lazy val i = ???
+sealed trait j
+implicit val k = ???
+given val l = ???
+enum m {}
+inline val n = ???
+opaque type o = Unit
+@volatile @transient @native
+override def p = ???
+
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x
 def abs(x: Int) = if x >= 0 then new x else now -x
 def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???
