@@ -266,6 +266,7 @@ class ScalaLexer(RegexLexer):
     idrest = u'%s(?:%s|[0-9])*(?:(?<=_)%s)?' % (letter, letter, op)
     letter_letter_digit = u'%s(?:%s|\\d)*' % (letter, letter)
     identifier = u'%s|%s|`[^`]+`' % (idrest, op)
+    uppercased_identifier = u'(?:[A-Z]%s)' % idrest
 
     tokens = {
         'root': [
@@ -288,6 +289,7 @@ class ScalaLexer(RegexLexer):
             (r'(trait)(\s+)', bygroups(Keyword, Text), 'class'),
             (r'(val|var)(\s+)', bygroups(Keyword, Text), 'val'),
             (r'(def)(\s+)', bygroups(Keyword, Text), 'def'),
+            (r'(given)(\s+)', bygroups(Keyword, Text), 'given'),
             (r'(type)(\s+)', bygroups(Keyword, Text), 'typedef'),
 
             # Extensions
@@ -386,6 +388,17 @@ class ScalaLexer(RegexLexer):
             (r'(as)(\s+)', bygroups(Keyword, Text), 'type'),
             (r'[\{=:]', Punctuation, '#pop'),
             (identifier, Name.Class),
+            (r'\n', Text, '#pop'), # New proposed syntax
+        ],
+        'given': [
+            (r'\s+', Text),
+            include('comments'),
+            (r'\(', Punctuation, 'parameter-list'),
+            (r'\[', Punctuation, 'typeparam'),
+            (r'(as)(\s+)', bygroups(Keyword, Text), ('#pop', 'type')),
+            (r'\{', Punctuation, '#pop'),
+            (uppercased_identifier, Name.Class),
+            (identifier, Name.Function),
             (r'\n', Text, '#pop'), # New proposed syntax
         ],
         'parameter-list': [
