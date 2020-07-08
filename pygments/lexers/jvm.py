@@ -320,18 +320,7 @@ class ScalaLexer(RegexLexer):
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
 
-            # Literals
-            (r'(true|false|null)\b', Keyword.Constant),
-            (r'0[xX][0-9a-fA-F_]*', Number.Hex),
-            (r'([0-9][0-9_]*\.[0-9][0-9_]*|\.[0-9][0-9_]*)([eE][+-]?[0-9][0-9_]*)?[fFdD]?',
-             Number.Float),
-            (r'[0-9]+([eE][+-]?[0-9]+)?[fFdD]', Number.Float),
-            (r'[0-9]+([eE][+-]?[0-9]+)[fFdD]?', Number.Float),
-            (r'[0-9]+(l|L|ul|UL)', Number.Integer.Long),
-            (r'[0-9]+', Number.Integer),
-            (r'""".*?"""(?!")', String),
-            (r'"(\\\\|\\"|[^"])*"', String),
-            (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char),
+            include('literals'),
 
             (u"'%s" % idrest, Text.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
@@ -424,15 +413,22 @@ class ScalaLexer(RegexLexer):
         'type': [
             (r'\s+', Text),
             include('comments'),
+            (r'\(', Punctuation, '#push'),
+            (r'\{', Punctuation, 'refinement'),
             (r'&|\||<[%:]|>:|[#_]|\bforSome\b|\btype\b', Keyword),
             (u'(=>|=|\u21d2)(\\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
-            (r'[({]', Operator, '#push'),
+            include('literals'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
              bygroups(Keyword.Type, Text, Operator), ('#pop', 'typeparam')),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
              bygroups(Keyword.Type, Text), '#pop'),
             (u'\\.|%s' % identifier, Keyword.Type),
             default('#pop')
+        ],
+        'refinement': [
+            (r'}', Punctuation, '#pop'),
+            (r';', Punctuation),
+            include('root')
         ],
         'typedef': [
             (r'\s+', Text),
@@ -451,7 +447,8 @@ class ScalaLexer(RegexLexer):
             (r',+', Punctuation),
             (u'<[%:]|=>|>:|[#_\u21D2]|\bforSome\b|\btype\b', Keyword),
             (r'([\])}])', Operator, '#pop'),
-            (r'[(\[{]', Operator, '#push'),
+            (r'[(\[]', Operator, '#push'),
+            (r'{', Operator, 'refinement'),
             (u'\\.|%s' % identifier, Keyword.Type)
         ],
         'comments': [
@@ -485,6 +482,21 @@ class ScalaLexer(RegexLexer):
             (r'\{', String.Interpol, '#push'),
             include('root'),
         ],
+
+        # To include:
+        'literals': [
+            (r'(true|false|null)\b', Keyword.Constant),
+            (r'0[xX][0-9a-fA-F_]*', Number.Hex),
+            (r'([0-9][0-9_]*\.[0-9][0-9_]*|\.[0-9][0-9_]*)([eE][+-]?[0-9][0-9_]*)?[fFdD]?',
+             Number.Float),
+            (r'[0-9]+([eE][+-]?[0-9]+)?[fFdD]', Number.Float),
+            (r'[0-9]+([eE][+-]?[0-9]+)[fFdD]?', Number.Float),
+            (r'[0-9]+(l|L|ul|UL)', Number.Integer.Long),
+            (r'[0-9]+', Number.Integer),
+            (r'""".*?"""(?!")', String),
+            (r'"(\\\\|\\"|[^"])*"', String),
+            (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char)
+        ]
     }
 
 
