@@ -37,6 +37,8 @@ true false null
 110_222_795_799.99 110.9499_999 2_000.343_999e561_100
 1e12 1e+34 1e-56 1e12f 1e+34f 1e-56f 1e12d 1e+34d 1e-56d
 1E12 1E+34 1E-56 1E12f 1E+34f 1E-56f 1E12d 1E+34d 1E-56d
+.1e12 .1e+34 .1e-56 .1e12f .1e+34f .1e-56f .1e12d .1e+34d .1e-56d
+.1E12 .1E+34 .1E-56 .1E12f .1E+34f .1E-56f .1E12d .1E+34d .1E-56d
 0x // Can still be highlighted correctly!
 0x1234567890ABCDEF 0x1234567890abcdef
 0x123_abc 0x123_ABC
