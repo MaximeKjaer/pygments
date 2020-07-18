@@ -30,7 +30,7 @@ export a.x.y.z // Test comment
 // Literals
 true false null
 1 2 3 4
-1L 1l 1ul 1UL
+1L 1l 10L 12123123L
 3.0 12.345
 3f 3.0f 3F 3.0F
 3d 3.0d 3D 3.0D

@@ -491,7 +491,7 @@ class ScalaLexer(RegexLexer):
              Number.Float),
             (r'[0-9]+([eE][+-]?[0-9]+)?[fFdD]', Number.Float),
             (r'[0-9]+([eE][+-]?[0-9]+)[fFdD]?', Number.Float),
-            (r'[0-9]+(l|L|ul|UL)', Number.Integer.Long),
+            (r'[0-9]+[lL]', Number.Integer.Long),
             (r'[0-9]+', Number.Integer),
             (r'""".*?"""(?!")', String),
             (r'"(\\\\|\\"|[^"])*"', String),
