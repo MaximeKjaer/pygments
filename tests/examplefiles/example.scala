@@ -118,27 +118,17 @@ given foo(x: X) as Foo = ...
 given foo[X](x: X) as Foo = ...
 given foo[X <: Y { type A = 1; def f(using a: Int): 2 }](x: X = 2) as Foo = ...
 given (using x: X = "abs")(using y: Y = s"y: $x", y: Char = if true then 'a' else 2) as Foo = ...
-
 given Ord[Int] { 
   def compare(x: List[T], y: List[T]) = ??? 
 }
-
 given [T](using Ord[T]) as Ord[List[T]]:
   def compare(x: List[T], y: List[T]) = ??? 
-
-trait Ord[T] {
-  def compare(x: T, y: T): Int
-  def (x: T) < (y: T) = compare(x, y) < 0
-  def (x: T) > (y: T) = compare(x, y) > 0
-}
 
 given intOrd as Ord[Int] {
   def compare(x: Int, y: Int) =
     if (x < y) -1 else if (x > y) +1 else 0
 }
-
 given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
-
   def compare(xs: List[T], ys: List[T]): Int = (xs, ys) match
     case (Nil, Nil) => 0
     case (Nil, _) => -1
@@ -148,35 +138,49 @@ given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
       if (fst != 0) fst else compare(xs1, ys1)
 }
 
+
+// Classes
 class Rational(x: Int, y: Int):
   def numer = x
   def denom = y
 
-class Sub extends Base:
+class Sub extends Base with Something:
   override def foo = 2
   def bar = 3
 
+// New
+new A
+new { }
+new Foo
+new foo.Foo
+new Foo.Foo
+new A:
+  def f = 3
+
+// Extension
 extension on (x: Rational):
   def < (y: Rational): Boolean = x.numer * y.denom < y.numer * x.denom
   def > (y: Rational): Boolean = y < x
 
 extension stringOps on (ss: Seq[String]) {
-def longestStrings: Seq[String] = {
-  val maxLength = ss.map(_.length).max
-  ss.filter(_.length == maxLength)
-}
-def longestString: String = longestStrings.head
+  def longestStrings: Seq[String] = {
+    val maxLength = ss.map(_.length).max
+    ss.filter(_.length == maxLength)
+  }
+  def longestString: String = longestStrings.head
 }
 
 extension listOps on [T](xs: List[T]) {
-def second: T = xs.tail.head
-def third: T = xs.tail.second
+  def second: T = xs.tail.head
+  def third: T = xs.tail.second
 }
 
 extension on [T](xs: List[T])(using Ordering[T]) {
-def largest(n: Int) = xs.sorted.takeRight(n)
+  def largest(n: Int) = xs.sorted.takeRight(n)
 }
 
+
+// Classes, traits, enums
 class Int:
   def + (that: Double): Double
   def + (that: Float): Float
@@ -209,11 +213,10 @@ enum Color:
 enum Color(val test: Int):
   case Red, Green, Blue, Magenta
 
-import Color._
-def isPrimary(color: Color): Boolean =
-  color match
-      case Red | Green | Blue => true
-      case Magenta => false
+  def isPrimary(color: Color): Boolean =
+    color match
+        case Red | Green | Blue => true
+        case Magenta => false
 
 enum Vehicle(val numberOfWheels: Int) {
   case Unicycle extends Vehicle(1)
@@ -247,9 +250,6 @@ type T = A:
 
 extension on (xs: List[Int]):
   def second: Int = xs.tail.head
-
-new A:
-  def f = 3
 
 package p:
   def a = 1
