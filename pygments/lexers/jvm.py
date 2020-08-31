@@ -298,6 +298,10 @@ class ScalaLexer(RegexLexer):
             # Annotations
             (u'@%s' % idrest, Name.Decorator),
 
+            # Quoted
+            (r'(\'\{|\'\[)(?!\')', Punctuation),
+            (r'[\]\}]', Punctuation),
+
             # Storage modifiers
             (r'(private|protected)(?:(\[)(\S+)(\]))?',
              bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),

@@ -78,6 +78,9 @@ open object X:
 open class Y:
 case object X
 case class Y()
+// Quoted
+'{ 2 }
+'[ String ]
 
 type X
 type X <: Y
