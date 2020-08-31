@@ -419,10 +419,10 @@ class ScalaLexer(RegexLexer):
             (u'(=>|=|\u21d2)(\\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
             include('literals'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
-             bygroups(Keyword.Type, Text, Operator), ('#pop', 'typeparam')),
+             bygroups(Name.Class, Text, Operator), ('#pop', 'typeparam')),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
-             bygroups(Keyword.Type, Text), '#pop'),
-            (u'\\.|%s' % identifier, Keyword.Type),
+             bygroups(Name.Class, Text), '#pop'),
+            (u'\\.|%s' % identifier, Name.Class),
             default('#pop')
         ],
         'refinement': [
@@ -434,11 +434,11 @@ class ScalaLexer(RegexLexer):
             (r'\s+', Text),
             include('comments'),
             (u'(%s)(\\s*)(\\[)' % identifier,
-             bygroups(Name.Type, Text, Punctuation), 'typeparam'),
+             bygroups(Name.Class, Text, Punctuation), 'typeparam'),
             (u'(%s)(\\s*)(=|<:|>:)' % identifier,
-             bygroups(Name.Type, Text, Operator), ('#pop', 'type')),
+             bygroups(Name.Class, Text, Operator), ('#pop', 'type')),
             (r'=|<:|>:', Operator, ('#pop', 'type')),
-            (identifier, Name.Type, '#pop'),
+            (identifier, Name.Class, '#pop'),
             default('#pop')
         ],
         'typeparam': [
@@ -449,7 +449,7 @@ class ScalaLexer(RegexLexer):
             (r'([\])}])', Operator, '#pop'),
             (r'[(\[]', Operator, '#push'),
             (r'{', Operator, 'refinement'),
-            (u'\\.|%s' % identifier, Keyword.Type)
+            (u'\\.|%s' % identifier, Name.Class)
         ],
         'comments': [
             (r'//.*?\n', Comment.Single),
