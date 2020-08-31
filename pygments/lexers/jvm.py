@@ -376,6 +376,7 @@ class ScalaLexer(RegexLexer):
             (r'(on)(\s+)', bygroups(Keyword, Text)),
             (r'(as)(\s+)', bygroups(Keyword, Text), 'type'),
             (r'[\{=:]', Punctuation, '#pop'),
+            (r'(?=def)', Text, '#pop'),
             (identifier, Name.Class),
             (r'\n', Text, '#pop'), # New proposed syntax
         ],

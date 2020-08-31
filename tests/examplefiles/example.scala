@@ -159,25 +159,13 @@ new A:
 
 // Extension
 extension on (x: Rational):
-  def < (y: Rational): Boolean = x.numer * y.denom < y.numer * x.denom
   def > (y: Rational): Boolean = y < x
-
-extension stringOps on (ss: Seq[String]) {
-  def longestStrings: Seq[String] = {
-    val maxLength = ss.map(_.length).max
-    ss.filter(_.length == maxLength)
-  }
-  def longestString: String = longestStrings.head
-}
-
-extension listOps on [T](xs: List[T]) {
-  def second: T = xs.tail.head
-  def third: T = xs.tail.second
-}
-
-extension on [T](xs: List[T])(using Ordering[T]) {
-  def largest(n: Int) = xs.sorted.takeRight(n)
-}
+extension Ops on (x: Rational):
+  def > (y: Rational): Boolean = y < x
+extension stringOps {  }
+extension {  }
+extension (x: T) def combine (y: T): T
+extension [T](x: T) def combine (y: T): T
 
 
 // Classes, traits, enums
