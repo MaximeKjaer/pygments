@@ -399,7 +399,6 @@ class ScalaLexer(RegexLexer):
             (u'(implicit|using)(\\s+)(%s)(\\s*)(:)' % identifier,
              bygroups(Keyword, Text, Name, Text, Operator), 'type'),
             (u'(implicit|using)(\\s+)', bygroups(Keyword, Text), 'type'),
-            (identifier, Name),
             include('comments'),
             include('root') # for default values
         ],
