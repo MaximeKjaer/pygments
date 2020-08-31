@@ -110,14 +110,18 @@ override def p = ???
 <% =:= <:< <%< >: <:
 
 // Given
-given foo as Foo = ...
-given as Foo = ...
-given (x: X) as Foo = ...
-given [X](x: X) as Foo = ...
-given foo(x: X) as Foo = ...
-given foo[X](x: X) as Foo = ...
-given foo[X <: Y { type A = 1; def f(using a: Int): 2 }](x: X = 2) as Foo = ...
-given (using x: X = "abs")(using y: Y = s"y: $x", y: Char = if true then 'a' else 2) as Foo = ...
+given Foo = ???
+given foo = ???
+given as Foo = ???
+given as foo = ???
+given bar as foo = ???
+given Foo as foo = ???
+given (x: X) as Foo = ???
+given [X](x: X) as Foo = ???
+given foo(x: X) as Foo = ???
+given foo[X](x: X) as Foo = ???
+given foo[X <: Y { type A = 1; def f(using a: Int): 2 }](x: X = 2) as Foo = ???
+given (using x: X = "abs")(using y: Y = s"y: $x", y: Char = if true then 'a' else 2) as Foo = ???
 given Ord[Int] { 
   def compare(x: List[T], y: List[T]) = ??? 
 }
