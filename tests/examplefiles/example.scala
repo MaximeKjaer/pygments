@@ -14,18 +14,27 @@ import a.x.y.z // Test comment
 
 // Exports
 export // This is incorrect Scala but can still be highlighted correctly
-export a.{x => y} // Test comment
+export a._
+export a.x // Test comment
+export a.x.y.z // Test comment
+export a.{x, y}
+export a.{x => y}
 export a.{x => } // This is incorrect Scala but can still be highlighted correctly
 export a.{x => `test-name`} // Test comment
 export given
 export given a // Test comment
-export given a.a // Test comment
+export given a.x // Test comment
+export given a._
 export given a.{x, y} // Test comment
-export a._ // Test comment
-export a.x // Test comment
-export a.x.y.z // Test comment
+export given a.{x => y}
+export given a.{x => `test-name`}
   export scanUnit.scan
   export printUnit.{status => _, _}
+
+// Package declarations
+package
+package com
+package com.example
 
 // Literals
 true false null
@@ -44,16 +53,23 @@ true false null
 0x123_abc 0x123_ABC
 "test" "\"test\"" "'test'" // comment
 """test: one ", two "", three """""" // comment
-'t' '"' '\''
+'t' '"' '\'' '\n' ' '
 
-// Declarations
-package
-package com
-package com.example
+// String interpolation
+s"1 + 2 = ${ 1 + { val x = 2; x } }."
+s"""1 + 2 = ${
+  def add(x: Int, y: Int) = {
+    x + y
+  }
+  add(1, 2)
+}."""
+s"$first$second"
+s"$safeTagMarker${mtch.matched}$safeTagMarker"
+s"${x$}"
+val a = 4; foo(a)
+s"$safeTagMarker${val a = 4; foo(a)}$safeTagMarker"
 
-package object x {}
-package object y:
-
+// Vals & vars
 val x: Int
 val y: Int = 1
 val z = 1
@@ -62,15 +78,33 @@ var y: Int = 1
 var z = 1
 val (a, b) = (1, 2)
 val Some(a) = Some(1, 2)
-val Test.Some(a) = Test.Some(1, 2)
+var Pair(a, b) = Pair(1, 2)
+val Test.Pair(a) = Test.Pair(1, 2)
 
+// Defs
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x
 def abs(x: Int) = if x >= 0 then new x else now -x
 def sum[A](xs: List[A])(implicit m: Monoid[A]): A = ???
 def sum[A](xs: List[A])(implicit Monoid[A]): A = ???
 def sum[A](xs: List[A])(using m: Monoid[A]): A = ???
 def sum[A](xs: List[A])(using Monoid[A]): A = ???
+def reduceRight(op: (T, T) => T): T = ???
+def foldRight[](z: U)(op: (T, U) => U): U = ???
 
+// Using
+def f(using x: Int): Unit = ()
+f(using 2)
+f(using .2)
+class A(using x: Int)
+new A(using 3)
+given [T](using x: Ord[T], using: Int) as Ord[List[T]]
+given [T](using Ord[T]) as Ord[List[T]]
+f(using ())
+f(using {})
+f(using ' ')
+f(using "")
+
+// Declarations
 trait X {}
 object X
 class Y
@@ -78,16 +112,80 @@ open object X:
 open class Y:
 case object X
 case class Y()
+package object x {}
+package object y:
+
 // Quoted
 '{ 2 }
 '[ String ]
 
+// Symbols
+object Unicode {
+    val blue = '* //red
+    val stillRed = '*
+    val invalidSymbol  = '**_x //'
+    val symbolFollowedByOp = 'symbol*
+    val symbolEndedWithOp  = 'symbol_*
+    val unclosedSymbol = '1 //'
+    val symbolWithDigit = 'symbol1 //'
+    val characterLit = 'x'
+    val greekSymbol = 'ξφδ
+    val greekSymbolDigit = 'φδφ0
+    val greekSymbolWithOp = 'δφξφξ_+-
+    val multiOpSymbol = '***
+}
+
+// Type aliases
 type X
 type X <: Y
 type X = Y
 type X[Y] = Y with Z
+type X[Y] = Y => (1 | 2, 3)
+type X[Y] = (Y, 3) => (1 | 2, 3)
+type Foo = Bar.Baz
+opaque type Logarithm = Double
 
-val open = true // 'open' is a soft keyword, should not be highlighted as keyword here
+// Type lambda
+[X, Y] =>> Map[Y, X]
+
+// Match types
+type Elem[X] = X match {
+  case String => Char
+  case Array[t] => t
+  case Iterable[t] => t
+}
+type Concat[Xs <: Tuple, +Ys <: Tuple] <: Tuple = Xs match {
+  case Unit => Ys
+  case x *: xs => x *: Concat[xs, Ys]
+}
+
+// Dependent function types
+trait Entry { type Key; val key: Key }
+def extractKey(e: Entry): e.Key = e.key
+val extractor: (e: Entry) => e.Key = extractKey
+type Extractor = Function1[Entry, Entry#Key] {
+  def apply(e: Entry): e.Key
+}
+
+// Singleton types
+val x = ???
+trait Foo[T <: x.type]
+val a: x.type = ???
+val b: Foo[x.type] = ???
+
+// Union and intersection types
+Type[A with "user provided string" with B]
+def help(id: UserName | Password) = ???
+val either: Password | UserName = ???
+val both: Object & Product = ???
+
+// Soft keywords (should not be highlighted as keywords here)
+val open = true
+val inline = true
+(using)
+(using  )
+(using , )
+(usingSomething)
 
 // Storage modifiers
 private object a {}
@@ -102,7 +200,6 @@ final val h = ???
 lazy val i = ???
 sealed trait j
 implicit val k = ???
-given val l = ???
 enum m {}
 inline val n = ???
 opaque type o = Unit
@@ -147,35 +244,12 @@ given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
 
 
 // Classes
+class Bar :
+class Foo:
+class ::
 class Rational(x: Int, y: Int):
   def numer = x
   def denom = y
-
-class Sub extends Base with Something:
-  override def foo = 2
-  def bar = 3
-
-// New
-new A
-new { }
-new Foo
-new foo.Foo
-new Foo.Foo
-new A:
-  def f = 3
-
-// Extension
-extension on (x: Rational):
-  def > (y: Rational): Boolean = y < x
-extension Ops on (x: Rational):
-  def > (y: Rational): Boolean = y < x
-extension stringOps {  }
-extension {  }
-extension (x: T) def combine (y: T): T
-extension [T](x: T) def combine (y: T): T
-
-
-// Classes, traits, enums
 class Int:
   def + (that: Double): Double
   def + (that: Float): Float
@@ -187,38 +261,47 @@ class Int:
   def == (that: Double): Boolean
   def == (that: Float): Boolean
   def == (that: Long): Boolean // same for !=, <, >, <=, >=
-  ...
 end Int
+class Sub extends Base with Something {
+  override def foo = 2
+  def bar = 3
+}
+class Succ(n: Nat) extends Nat:
+  // ...
+open class Writer[T] {
+  /** Sends to stdout, can be overridden */
+  def send(x: T) = println(x)
+  /** Sends all arguments using `send` */
+  def sendAll(xs: T*) = xs.foreach(send)
+}
 
+// Traits
+trait Foo:
+trait Bar :
+trait *:
+trait *: :
+trait :: :
+1 :: Nil
+1 ::
+
+// Objects
+object Foo:
+object Bar :
 object Zero extends Nat:
   ...
 
-class Succ(n: Nat) extends Nat:
-  ...
-
-trait Color
-object Red extends Color
-object Green extends Color
-object Blue extends Color
-object Magenta extends Color
-
+// Enums
+object Enum extends Enumeration {
+  val Foo, Bar, Baz = Value
+}
 enum Color:
   case Red, Green, Blue, Magenta
-
 enum Color(val test: Int):
   case Red, Green, Blue, Magenta
-
   def isPrimary(color: Color): Boolean =
     color match
         case Red | Green | Blue => true
         case Magenta => false
-
-enum Vehicle(val numberOfWheels: Int) {
-  case Unicycle extends Vehicle(1)
-  case Bicycle extends Vehicle(2)
-  case Car extends Vehicle(4)
-}
-
 abstract class Color
 object Color {
   val Red = Color()
@@ -227,75 +310,60 @@ object Color {
   val Magenta = Color()
   ...
 }
+enum Vehicle(val numberOfWheels: Int) {
+  case Unicycle extends Vehicle(1)
+  case Bicycle extends Vehicle(2)
+  case Car extends Vehicle(4)
+}
+enum Vehicle(val numberOfWheels: Int):
+  case Unicycle extends Vehicle(1)
+  case Bicycle extends Vehicle(2)
+  case Car extends Vehicle(4)
 
-trait A:
-  def f: Int
-
-class C(x: Int) extends A:
-  def f = x
-
-object O:
+// New
+new A
+new { }
+new Foo
+new foo.Foo
+new Foo.Foo
+new A:
   def f = 3
 
-enum Color:
-  case Red, Green, Blue
+// End
+new Foo:
+  // ...
+end new
+end extension
+end if
+end while
+end for
+end match
+class Foo
+end Foo
+def foo
+end bar
+end `bar`
+end
 
-type T = A:
-  def f: Int
+// Extension methods
+extension on (x: Rational):
+  def > (y: Rational): Boolean = y < x
+extension Ops on (x: Rational):
+  def > (y: Rational): Boolean = y < x
+extension stringOps {  }
+extension {  }
+extension (x: T) def combine (y: T): T
+extension [T](x: T) def combine (y: T): T
 
-extension on (xs: List[Int]):
-  def second: Int = xs.tail.head
+// Extends
+trait A extends B
+trait A extends (B => B){}
+trait Color
+object Red extends Color
 
-package p:
-  def a = 1
-
-package q:
-  def b = 2
-
-extension stringOps {
-  def (ss: Seq[String]).longestStrings: Seq[String] = {
-    val maxLength = ss.map(_.length).max
-    ss.filter(_.length == maxLength)
-  }
-  def (ss: Seq[String]).longestString: String =
-    ss.longestStrings.head
-}
-extension listOps {
-  def [T](xs: List[T]).second: T = xs.tail.head
-  def [T](xs: List[T]).third: T = xs.tail.second
-}
-extension {
-  def [T](xs: List[T]).largest(using Ordering[T])(n: Int) =
-    xs.sorted.takeRight(n)
-}
-
-def f(x: Resettable & Growable[String]) = {
-  x.reset()
-  x.add("first")
-}
-
-opaque type Logarithm = Double
-
-open class Writer[T] {
-
-  /** Sends to stdout, can be overridden */
-  def send(x: T) = println(x)
-
-  /** Sends all arguments using `send` */
-  def sendAll(xs: T*) = xs.foreach(send)
-}
-
-class Copier {
-  private val printUnit = new Printer { type PrinterType = InkJet }
-  private val scanUnit = new Scanner
-
-  export scanUnit.scan
-  export printUnit.{status => _, _}
-
-  def status: List[String] = printUnit.status ++ scanUnit.status
-}
-
+// Derives
 enum Tree[T] derives Eq, Ordering, Show {
   case Branch[T](left: Tree[T], right: Tree[T])
   case Leaf[T](elem: T)
 }
+
