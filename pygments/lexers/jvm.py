@@ -266,7 +266,7 @@ class ScalaLexer(RegexLexer):
     idrest = u'%s(?:%s|[0-9])*(?:(?<=_)%s)?' % (letter, letter, op)
     letter_letter_digit = u'%s(?:%s|\\d)*' % (letter, letter)
     identifier = u'%s|%s|`[^`]+`' % (idrest, op)
-    uppercased_identifier = u'(?:[A-Z]%s)' % idrest
+    uppercased_identifier = u'[A-Z](?:%s)?' % idrest
 
     tokens = {
         'root': [
