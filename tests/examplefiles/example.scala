@@ -239,6 +239,8 @@ given (using x: X = "abs")(using y: Y = s"y: $x", y: Char = if true then 'a' els
 given Ord[Int] { 
   def compare(x: List[T], y: List[T]) = ??? 
 }
+given Ordering[Int]:
+  def compare(x: Int, y: Int): Int = ???
 given [T](using Ord[T]) as Ord[List[T]]:
   def compare(x: List[T], y: List[T]) = ??? 
 

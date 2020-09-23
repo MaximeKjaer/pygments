@@ -305,7 +305,7 @@ class ScalaLexer(RegexLexer):
             # Storage modifiers
             (r'(private|protected)(?:(\[)(\S+)(\]))?',
              bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),
-            (r'\b(synchronized|abstract|final|lazy|sealed|implicit|given|enum|'
+            (r'\b(synchronized|abstract|final|lazy|sealed|implicit|enum|'
              r'inline|opaque|override|@transient|@native)\b', Keyword),
 
             # Meta bounds
@@ -390,7 +390,7 @@ class ScalaLexer(RegexLexer):
             (r'\(', Punctuation, 'parameter-list'),
             (r'\[', Punctuation, 'typeparam'),
             (r'(as)(\s+)', bygroups(Keyword, Text), ('#pop', 'type')),
-            (r'[\{=]', Punctuation, '#pop'),
+            (r'[\{=:]', Punctuation, '#pop'),
             (uppercased_identifier, Name.Class),
             (identifier, Name.Function),
             (r'\n', Text, '#pop'), # New proposed syntax
