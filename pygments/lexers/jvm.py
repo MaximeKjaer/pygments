@@ -278,6 +278,10 @@ class ScalaLexer(RegexLexer):
 
             # Imports and exports
             (r'(import|export)(\s+)', bygroups(Keyword, Text), 'import'),
+
+            # End
+            (r'(end)(\s+)$', bygroups(Keyword, Text)),
+            (r'(end)\b', Keyword, 'end'),
             
             # Declarations
             (r'(package)(\s+)(object)(\s+)',
@@ -315,7 +319,7 @@ class ScalaLexer(RegexLexer):
             (u'(extends|with|derives)(\\s+)(%s)' % identifier,
              bygroups(Keyword, Text, Name.Class)),
 
-            (u'(abstract|as|case|catch|derives|do|else|enum|end|export|extends|'
+            (u'(abstract|as|case|catch|derives|do|else|enum|export|extends|'
              u'finally|final|forSome|for|given|if|implicit|lazy|match|new|'
              u'override|open|opaque|requires|return|sealed|'
              u'super|then|this|throw|try|transparent|using|while|with|'
@@ -361,6 +365,15 @@ class ScalaLexer(RegexLexer):
             (r'\.', Punctuation),
             (uppercased_identifier, Name.Class),
             (identifier, Name.Namespace)
+        ],
+        'end': [
+            (r'//.*?\n', Comment.Single, '#pop'),
+            (r'(if|while|for|match|try|new|this|val|given|extension)', Keyword, '#pop'),
+            (uppercased_identifier, Name.Class, '#pop'),
+            (identifier, Name, '#pop'),
+            (r'$', Text, '#pop'),
+            (r'\s+', Text),
+            include('comments')
         ],
         'val': [
             (r'\s+', Text),
