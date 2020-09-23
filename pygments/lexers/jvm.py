@@ -469,9 +469,9 @@ class ScalaLexer(RegexLexer):
             include('comments'),
             (r',+', Punctuation),
             (u'<[%:]|=>|>:|[#_\u21D2]|\bforSome\b|\btype\b', Keyword),
-            (r'([\])}])', Operator, '#pop'),
-            (r'[(\[]', Operator, '#push'),
-            (r'{', Operator, 'refinement'),
+            (r'([\])}])', Punctuation, '#pop'),
+            (r'[(\[]', Punctuation, '#push'),
+            (r'{', Punctuation, 'refinement'),
             (u'\\.|%s' % identifier, Name.Class)
         ],
         'comments': [
