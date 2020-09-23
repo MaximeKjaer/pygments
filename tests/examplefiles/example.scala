@@ -17,13 +17,17 @@ new A:
 import // This is incorrect Scala but can still be highlighted correctly
 import a.{x => y} // Test comment
 import a.{x => } // This is incorrect Scala but can still be highlighted correctly
-import a.{x => `test-name`} // Test comment
-import a.given // Test comment
-import a.{given a} // Test comment
-import a.{x, y} // Test comment
-import a._ // Test comment
-import a.x // Test comment
-import a.x.y.z // Test comment
+import a.{x => `test-name`}
+import a.given // This should not be highlighted as a keyword, given is only a soft keyword
+import a.{given a}
+import a.{x, y}
+import a._
+import a.x
+import a.x.y.z
+import java.io.{File, IOException, FileNotFoundException}
+import java.io.File
+import scala.math.{given Ordering[Int]}
+import scala.math.{given Ordering[?]}
 
 // Exports
 export // This is incorrect Scala but can still be highlighted correctly

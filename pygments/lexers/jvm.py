@@ -341,8 +341,17 @@ class ScalaLexer(RegexLexer):
             (r'\n', Text)
         ],
         'import': [
-            (r'(\{|\}|=>|,)', Operator),
+            (r'\{', Punctuation, 'import-brace'),
+            include('package-name'),
+        ],
+        'import-brace': [
+            (r'\s+', Text),
             (r'(given)(?=\s)', Keyword),
+            (r'=>', Operator),
+            (r'\}', Punctuation, '#pop'),
+            (r',', Punctuation),
+            (r'\[', Punctuation, 'typeparam'),
+            include('comments'),
             include('package-name'),
         ],
         'package-name': [
@@ -350,6 +359,7 @@ class ScalaLexer(RegexLexer):
             (r'[^\S\n]+', Text),
             include('comments'),
             (r'\.', Punctuation),
+            (uppercased_identifier, Name.Class),
             (identifier, Name.Namespace)
         ],
         'val': [
