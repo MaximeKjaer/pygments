@@ -1,5 +1,18 @@
 #!/usr/bin/scala
 
+// TODO
+import a.{given a}
+s"$safeTagMarker${mtch.matched}$safeTagMarker"
+val blue = '*
+type X[Y] = Y => (1 | 2, 3)
+type X[Y] = (Y, 3) => (1 | 2, 3)
+Type[A with "user provided string" with B]
+(using)
+(using  )
+(using , )
+trait :: :
+new A:
+
 // Imports
 import // This is incorrect Scala but can still be highlighted correctly
 import a.{x => y} // Test comment
