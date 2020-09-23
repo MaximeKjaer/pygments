@@ -90,6 +90,7 @@ def sum[A](xs: List[A])(using m: Monoid[A]): A = ???
 def sum[A](xs: List[A])(using Monoid[A]): A = ???
 def reduceRight(op: (T, T) => T): T = ???
 def foldRight[](z: U)(op: (T, U) => U): U = ???
+def obj(fields: (String, Any)*, test: String): Json
 
 // Using
 def f(using x: Int): Unit = ()

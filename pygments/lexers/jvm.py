@@ -417,10 +417,12 @@ class ScalaLexer(RegexLexer):
         'type': [
             (r'\s+', Text),
             include('comments'),
-            (r'\(', Punctuation, '#push'),
+            (r'\(', Punctuation, 'parenthesized-type'),
+            (r'\)', Punctuation, '#pop'),
             (r'\{', Punctuation, 'refinement'),
-            (r'&|\||<[%:]|>:|[#_]|\bforSome\b|\btype\b', Keyword),
-            (u'(=>|=|\u21d2)(\\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
+            (r'&|\||<%|<:|>:|#|_|\bforSome\b|\btype\b', Keyword),
+            (r'=>', Operator),
+            (r'(=|\u21d2)(\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
             include('literals'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
              bygroups(Name.Class, Text, Operator), ('#pop', 'typeparam')),
@@ -428,6 +430,23 @@ class ScalaLexer(RegexLexer):
              bygroups(Name.Class, Text), '#pop'),
             (u'\\.|%s' % identifier, Name.Class),
             default('#pop')
+        ],
+        'parenthesized-type': [
+            (r'\s+', Text),
+            include('comments'),
+            (r',', Punctuation),
+            (r'\(', Punctuation, '#push'),
+            (r'\)', Punctuation, '#pop'),
+            (r'\{', Punctuation, 'refinement'),
+            (r'&|\||<%|<:|>:|#|_|\bforSome\b|\btype\b', Keyword),
+            (r'=>', Operator),
+            (r'(=|\u21d2)(\s*)', bygroups(Operator, Text)), # not considered ops
+            include('literals'),
+            (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
+             bygroups(Name.Class, Text, Operator), 'typeparam'),
+            (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
+             bygroups(Name.Class, Text)),
+            (u'\\.|%s' % identifier, Name.Class)
         ],
         'refinement': [
             (r'}', Punctuation, '#pop'),
