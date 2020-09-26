@@ -324,8 +324,8 @@ class ScalaLexer(RegexLexer):
              u'finally|final|forSome|for|given|if|implicit|lazy|match|new|'
              u'override|open|opaque|requires|return|sealed|'
              u'super|then|this|throw|try|transparent|using|while|with|'
-             u'yield)\\b|'
-             u'(=>|[#@_\u21D2\u2190])(\\b|(?=\\s)|$)', Keyword),
+             u'yield)\\b', Keyword),
+            ('=>|_\\*|@', Operator),
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
 
