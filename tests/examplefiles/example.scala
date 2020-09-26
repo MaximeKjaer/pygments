@@ -97,6 +97,9 @@ val (a, b) = (1, 2)
 val Some(a) = Some(1, 2)
 var Pair(a, b) = Pair(1, 2)
 val Test.Pair(a) = Test.Pair(1, 2)
+val a :: b = x :: Nil
+var a :: b = x :: Nil
+val a +: rest = ???
 
 // Defs
 def abs[T](x: Int): Int = if x >= 0 then new x else now -x

@@ -378,8 +378,10 @@ class ScalaLexer(RegexLexer):
         ],
         'val': [
             (r'\s+', Text),
+            (':' + op, Operator),
             (u':', Operator, ('#pop', 'type')), # Must pop in case it is abstract
             (r'=', Operator, '#pop'),
+            (op, Operator),
             (r'[(),]', Punctuation),
             (u'(%s)(\\.)' % identifier, bygroups(Name.Namespace, Punctuation)), # TODO namespace?
             (u'(%s)(\\()' % identifier, bygroups(Name.Function, Punctuation)), # TODO function?
