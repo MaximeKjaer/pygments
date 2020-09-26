@@ -1,8 +1,6 @@
 #!/usr/bin/scala
 
 // TODO
-import a.{given a}
-s"$safeTagMarker${mtch.matched}$safeTagMarker"
 val blue = '*
 type X[Y] = Y => (1 | 2, 3)
 type X[Y] = (Y, 3) => (1 | 2, 3)
@@ -82,7 +80,9 @@ s"""1 + 2 = ${
 }."""
 s"$first$second"
 s"$safeTagMarker${mtch.matched}$safeTagMarker"
+s"$a$a$a${b}$a${b}${b}"
 s"${x$}"
+s"$a$$$a" // $$ is an escape
 val a = 4; foo(a)
 s"$safeTagMarker${val a = 4; foo(a)}$safeTagMarker"
 

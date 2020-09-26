@@ -264,7 +264,8 @@ class ScalaLexer(RegexLexer):
              u'\ua77d-\ua77e\ua780\ua782\ua784\ua786\ua78b\uff21-\uff3a]')
 
     idrest = u'%s(?:%s|[0-9])*(?:(?<=_)%s)?' % (letter, letter, op)
-    letter_letter_digit = u'%s(?:%s|\\d)*' % (letter, letter)
+    letter_no_dollar_sign = letter.replace('\\$', '')
+    letter_letter_or_digit_no_dollar_sign = '%s(?:%s|\\d)*' % (letter, letter_no_dollar_sign)
     identifier = u'%s|%s|`[^`]+`' % (idrest, op)
     uppercased_identifier = u'[A-Z](?:%s)?' % idrest
 
@@ -509,8 +510,8 @@ class ScalaLexer(RegexLexer):
         ],
         'interpstringcommon': [
             (r'[^"$\\]+', String),
-            (r'\$\$', String),
-            (r'\$' + letter_letter_digit, String.Interpol),
+            (r'\$\$', String.Escape),
+            ('(\\$)(%s)' % letter_letter_or_digit_no_dollar_sign, bygroups(String.Interpol, Name)),
             (r'\$\{', String.Interpol, 'interpbrace'),
             (r'\\.', String),
         ],
@@ -525,7 +526,12 @@ class ScalaLexer(RegexLexer):
         ],
         'interpbrace': [
             (r'\}', String.Interpol, '#pop'),
-            (r'\{', String.Interpol, '#push'),
+            (r'\{', Punctuation, 'interp-nested-brace'),
+            include('root'),
+        ],
+        'interp-nested-brace': [
+            (r'\{', Punctuation, '#push'),
+            (r'\}', Punctuation, '#pop'),
             include('root'),
         ],
 
