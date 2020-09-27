@@ -306,8 +306,8 @@ class ScalaLexer(RegexLexer):
             # Quoted
             (r'(\'\{|\'\[)(?!\')', Punctuation),
 
-            # Symbol literal
-            ('(\'(?:%s|%s))(?!\')' % (idrest, op), Name.Constant),            
+            # Literals
+            include('literals'),
 
             # Storage modifiers
             (r'(private|protected)(?:(\[)(\S+)(\]))?',
@@ -334,9 +334,6 @@ class ScalaLexer(RegexLexer):
             # Punctuation
             (r'\[', Punctuation, 'typeparam'),
             (r'[(){};,.#]', Punctuation),
-
-            # Literals
-            include('literals'),
 
             (u"'%s" % idrest, Text.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
@@ -554,7 +551,9 @@ class ScalaLexer(RegexLexer):
             (r'[0-9]+', Number.Integer),
             (r'""".*?"""(?!")', String),
             (r'"(\\\\|\\"|[^"])*"', String),
-            (r"'\\.'|'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char)
+            (r"(')(\\.)(')", bygroups(String.Char, String.Escape, String.Char)),
+            (r"'[^\\]'|'\\u[0-9a-fA-F]{4}'", String.Char),
+            ('(\'(?:%s|%s))(?!\')' % (idrest, op), Name.Constant),
         ]
     }
 
