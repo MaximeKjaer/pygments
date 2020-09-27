@@ -1,7 +1,6 @@
 #!/usr/bin/scala
 
 // TODO
-val blue = '*
 type X[Y] = Y => (1 | 2, 3)
 type X[Y] = (Y, 3) => (1 | 2, 3)
 Type[A with "user provided string" with B]
@@ -147,7 +146,7 @@ object Unicode {
     val invalidSymbol  = '**_x //'
     val symbolFollowedByOp = 'symbol*
     val symbolEndedWithOp  = 'symbol_*
-    val unclosedSymbol = '1 //'
+    val notASymbol = '1 //'
     val symbolWithDigit = 'symbol1 //'
     val characterLit = 'x'
     val greekSymbol = 'ξφδ

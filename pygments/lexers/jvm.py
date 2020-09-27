@@ -307,6 +307,9 @@ class ScalaLexer(RegexLexer):
             (r'(\'\{|\'\[)(?!\')', Punctuation),
             (r'[\]\}]', Punctuation),
 
+            # Symbol literal
+            ('(\'(?:%s|%s))(?!\')' % (idrest, op), Name.Constant),            
+
             # Storage modifiers
             (r'(private|protected)(?:(\[)(\S+)(\]))?',
              bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),
