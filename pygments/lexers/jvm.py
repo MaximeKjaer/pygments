@@ -305,7 +305,6 @@ class ScalaLexer(RegexLexer):
 
             # Quoted
             (r'(\'\{|\'\[)(?!\')', Punctuation),
-            (r'[\]\}]', Punctuation),
 
             # Symbol literal
             ('(\'(?:%s|%s))(?!\')' % (idrest, op), Name.Constant),            
@@ -332,6 +331,11 @@ class ScalaLexer(RegexLexer):
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
 
+            # Punctuation
+            (r'\[', Punctuation, 'typeparam'),
+            (r'[(){};,.#]', Punctuation),
+
+            # Literals
             include('literals'),
 
             (u"'%s" % idrest, Text.Symbol),
@@ -342,8 +346,6 @@ class ScalaLexer(RegexLexer):
             # Name.Attribute)),
             (idrest, Name),
             (r'`[^`]+`', Name),
-            (r'\[', Operator, 'typeparam'),
-            (r'[(){};,.#]', Operator),
             (op, Operator),
             
             (r'\n', Text)
@@ -427,8 +429,8 @@ class ScalaLexer(RegexLexer):
         'parameter-list': [
             (r'\s+', Text),
             (r':', Operator, 'type'),
-            (r',', Operator),
-            (r'\)', Operator, '#pop'),
+            (r',', Punctuation),
+            (r'\)', Punctuation, '#pop'),
             (u'(implicit|using)(\\s+)(%s)(\\s*)(:)' % identifier,
              bygroups(Keyword, Text, Name, Text, Operator), 'type'),
             (u'(implicit|using)(\\s+)', bygroups(Keyword, Text), 'type'),
@@ -454,7 +456,7 @@ class ScalaLexer(RegexLexer):
             (r'(=|\u21d2)(\s*)', bygroups(Operator, Text), '#pop'), # not considered ops
             include('literals'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
-             bygroups(Name.Class, Text, Operator), ('#pop', 'typeparam')),
+             bygroups(Name.Class, Text, Punctuation), ('#pop', 'typeparam')),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
              bygroups(Name.Class, Text), '#pop'),
             (u'\\.|%s' % identifier, Name.Class),
@@ -472,7 +474,7 @@ class ScalaLexer(RegexLexer):
             (r'(=|\u21d2)(\s*)', bygroups(Operator, Text)), # not considered ops
             include('literals'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)(\\[)' % (identifier, identifier),
-             bygroups(Name.Class, Text, Operator), 'typeparam'),
+             bygroups(Name.Class, Text, Punctuation), 'typeparam'),
             (u'((?:%s)(?:\\.(?:%s))*)(\\s*)' % (identifier, identifier),
              bygroups(Name.Class, Text)),
             (u'\\.|%s' % identifier, Name.Class)
