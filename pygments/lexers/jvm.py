@@ -310,19 +310,18 @@ class ScalaLexer(RegexLexer):
             include('literals'),
 
             # Storage modifiers
-            (r'(private|protected)(?:(\[)(\S+)(\]))?',
-             bygroups(Keyword, Punctuation, Name.Namespace, Punctuation)),
-            (r'\b(synchronized|abstract|final|lazy|sealed|implicit|enum|'
-             r'inline|opaque|override|@transient|@native)\b', Keyword),
+            (r'\b(private|protected)\b', Keyword),
+            (r'\b(synchronized|@volatile|abstract|final|lazy|sealed|implicit|override|@transient|@native)\b', Keyword),
+            (r'\b(transparent|opaque|infix|open|inline)\b(?=[a-z\s]*\b(def|val|var|given|type|class|trait|object|enum)\b)', Keyword),
 
             # Meta bounds
             (r'<%|=:=|<:<|<%<|>:|<:', Operator),           
 
             # Keywords
-            (u'(abstract|as|case|catch|derives|do|else|enum|export|extends|'
-             u'finally|final|forSome|for|given|if|implicit|lazy|match|new|'
-             u'override|open|opaque|requires|return|sealed|'
-             u'super|then|this|throw|try|transparent|using|while|with|'
+            (u'(as|case|catch|derives|do|else|enum|export|extends|'
+             u'finally|forSome|for|given|if|match|new|'
+             u'requires|return|'
+             u'super|then|this|throw|try|using|while|with|'
              u'yield)\\b', Keyword),
 
             # Inheritance
@@ -405,14 +404,8 @@ class ScalaLexer(RegexLexer):
         'extension': [
             (r'\s+', Text),
             include('comments'),
-            (r'\(', Punctuation, 'parameter-list'),
-            (r'\[', Punctuation, 'typeparam'),
-            (r'(on)(\s+)', bygroups(Keyword, Text)),
-            (r'(as)(\s+)', bygroups(Keyword, Text), 'type'),
-            (r'[\{=:]', Punctuation, '#pop'),
-            (r'(?=def)', Text, '#pop'),
-            (identifier, Name.Class),
-            (r'\n', Text, '#pop'), # New proposed syntax
+            (r'\(', Punctuation, ('#pop', 'parameter-list')),
+            (r'\[', Punctuation, ('#pop', 'typeparam'))
         ],
         'given': [
             (r'\s+', Text),
