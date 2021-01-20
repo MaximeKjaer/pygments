@@ -321,7 +321,7 @@ class ScalaLexer(RegexLexer):
             (u'(as|case|catch|derives|do|else|enum|export|extends|'
              u'finally|forSome|for|given|if|match|new|'
              u'requires|return|'
-             u'super|then|this|throw|try|using|while|with|'
+             u'then|throw|try|using|while|with|'
              u'yield)\\b', Keyword),
 
             # Inheritance
@@ -535,6 +535,7 @@ class ScalaLexer(RegexLexer):
 
         # To include:
         'literals': [
+            (r'\b(this|super)\b', Name.Builtin.Pseudo),
             (r'(true|false|null)\b', Keyword.Constant),
             (r'0[xX][0-9a-fA-F_]*', Number.Hex),
             (r'([0-9][0-9_]*\.[0-9][0-9_]*|\.[0-9][0-9_]*)([eE][+-]?[0-9][0-9_]*)?[fFdD]?',

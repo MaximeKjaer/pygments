@@ -69,6 +69,7 @@ true false null
 "test" "\"test\"" "'test'" // comment
 """test: one ", two "", three """""" // comment
 't' '"' '\'' '\n' ' '
+super this
 
 // String interpolation
 s"1 + 2 = ${ 1 + { val x = 2; x } }."
