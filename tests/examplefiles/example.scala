@@ -7,7 +7,7 @@ Type[A with "user provided string" with B]
 (using)
 (using  )
 (using , )
-trait :: :
+trait :: with
 new A:
 given listOrd[T: Ordering]: Ordering[List[T]] = ???
 
@@ -269,13 +269,15 @@ given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
          if fst != 0 then fst else compare(xs1, ys1)
 
 // Classes
-class Bar :
-class Foo:
-class ::
-class Rational(x: Int, y: Int):
+class A
+class B
+class Bar with
+class Foo with
+class :: with
+class Rational(x: Int, y: Int) with
   def numer = x
   def denom = y
-class Int:
+class Int with
   def + (that: Double): Double
   def + (that: Float): Float
   def + (that: Long): Long
@@ -291,7 +293,7 @@ class Sub extends Base with Something {
   override def foo = 2
   def bar = 3
 }
-class Succ(n: Nat) extends Nat:
+class Succ(n: Nat) extends Nat with
   // ...
 open class Writer[T] {
   /** Sends to stdout, can be overridden */
@@ -299,34 +301,39 @@ open class Writer[T] {
   /** Sends all arguments using `send` */
   def sendAll(xs: T*) = xs.foreach(send)
 }
+class LazyList[+T](init: => State[T]) with
+  lazy val state: State[T] = init			
 
 // Traits
-trait Foo:
-trait Bar :
-trait *:
-trait *: :
-trait :: :
+trait Foo with
+trait Bar with
+trait *: with
+trait *: with
+trait :: with
 1 :: Nil
 1 ::
 
 // Objects
-object Foo:
-object Bar :
-object Zero extends Nat:
+object Foo with
+object Bar with
+object Zero extends Nat with
   ...
 
 // Enums
 object Enum extends Enumeration {
   val Foo, Bar, Baz = Value
 }
-enum Color:
+enum Color with
   case Red, Green, Blue, Magenta
-enum Color(val test: Int):
+enum Color(val test: Int) with
   case Red, Green, Blue, Magenta
   def isPrimary(color: Color): Boolean =
     color match
         case Red | Green | Blue => true
         case Magenta => false
+enum State[T] with
+  case Empty
+  case Cons(hd: T, tl: LazyList[T])
 abstract class Color
 object Color {
   val Red = Color()

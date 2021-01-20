@@ -316,17 +316,19 @@ class ScalaLexer(RegexLexer):
              r'inline|opaque|override|@transient|@native)\b', Keyword),
 
             # Meta bounds
-            (r'<%|=:=|<:<|<%<|>:|<:', Operator),
+            (r'<%|=:=|<:<|<%<|>:|<:', Operator),           
 
-            # Inheritance
-            (u'(extends|with|derives)(\\s+)(%s)' % identifier,
-             bygroups(Keyword, Text, Name.Class)),
-
+            # Keywords
             (u'(abstract|as|case|catch|derives|do|else|enum|export|extends|'
              u'finally|final|forSome|for|given|if|implicit|lazy|match|new|'
              u'override|open|opaque|requires|return|sealed|'
              u'super|then|this|throw|try|transparent|using|while|with|'
              u'yield)\\b', Keyword),
+
+            # Inheritance
+            (u'(extends|with|derives)(\\s+)(%s)' % identifier,
+             bygroups(Keyword, Text, Name.Class)),
+
             ('=>|_\\*|@', Operator),
             (u':(?!%s)' % op, Operator),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
@@ -437,7 +439,6 @@ class ScalaLexer(RegexLexer):
         'class': [
             (r'\s+', Text),
             include('comments'),
-            (r'[{:;]', Punctuation, '#pop'),
             (r'\[', Punctuation, 'typeparam'),
             (r'\(', Punctuation, 'parameter-list'),
             (identifier, Name.Class, '#pop'),
