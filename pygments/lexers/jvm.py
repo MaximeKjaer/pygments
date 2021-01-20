@@ -330,7 +330,7 @@ class ScalaLexer(RegexLexer):
              bygroups(Keyword, Text, Name.Class)),
 
             ('=>|_\\*|@', Operator),
-            (u':(?!%s)' % op, Operator),
+            (u':(?!%s)' % op, Punctuation),
             (u'%s%s\\b' % (upper, idrest), Name.Class),
 
             # Punctuation
@@ -382,8 +382,8 @@ class ScalaLexer(RegexLexer):
         ],
         'val': [
             (r'\s+', Text),
-            (':' + op, Operator),
-            (u':', Operator, ('#pop', 'type')), # Must pop in case it is abstract
+            (':' + op, Punctuation),
+            (u':', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
             (r'=', Operator, '#pop'),
             (op, Operator),
             (r'[(),]', Punctuation),
