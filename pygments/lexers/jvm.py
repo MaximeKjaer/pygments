@@ -330,7 +330,7 @@ class ScalaLexer(RegexLexer):
 
             ('=>|_\\*|@', Operator),
             (u':(?!%s)' % op, Punctuation),
-            (u'%s%s\\b' % (upper, idrest), Name.Class),
+            (u'%s\\b' % uppercased_identifier, Name.Class),
 
             # Punctuation
             (r'\[', Punctuation, 'typeparam'),

@@ -278,6 +278,9 @@ class :: with
 class Rational(x: Int, y: Int) with
   def numer = x
   def denom = y
+class Cons(_head: Int, _tail: IntList) extends IntList with
+  val head = _head
+  val tail = _tail
 class Int with
   def + (that: Double): Double
   def + (that: Float): Float
