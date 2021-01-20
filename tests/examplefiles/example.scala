@@ -9,6 +9,7 @@ Type[A with "user provided string" with B]
 (using , )
 trait :: :
 new A:
+given listOrd[T: Ordering]: Ordering[List[T]] = ???
 
 // Imports
 import // This is incorrect Scala but can still be highlighted correctly
@@ -117,8 +118,6 @@ f(using 2)
 f(using .2)
 class A(using x: Int)
 new A(using 3)
-given [T](using x: Ord[T], using: Int) as Ord[List[T]]
-given [T](using Ord[T]) as Ord[List[T]]
 f(using ())
 f(using {})
 f(using ' ')
@@ -232,38 +231,42 @@ override def p = ???
 // Given
 given Foo = ???
 given foo = ???
-given as Foo = ???
-given as foo = ???
-given bar as foo = ???
-given Foo as foo = ???
-given (x: X) as Foo = ???
-given [X](x: X) as Foo = ???
-given foo(x: X) as Foo = ???
-given foo[X](x: X) as Foo = ???
-given foo[X <: Y { type A = 1; def f(using a: Int): 2 }](x: X = 2) as Foo = ???
-given (using x: X = "abs")(using y: Y = s"y: $x", y: Char = if true then 'a' else 2) as Foo = ???
-given Ord[Int] { 
-  def compare(x: List[T], y: List[T]) = ??? 
-}
-given Ordering[Int]:
-  def compare(x: Int, y: Int): Int = ???
-given [T](using Ord[T]) as Ord[List[T]]:
-  def compare(x: List[T], y: List[T]) = ??? 
+given foo: Foo with
+given listOrd[T: Ordering]: Ordering[List[T]] with
+given listOrd(using ev: Ev): Foo with
+given Ordering[Int] with
+given Foo with
+given [T: Ordering]: Ordering[List[T]] with
+given (using ev: Ev): Foo with
+given intOrd: Ordering[Int] with
+given foo: Foo = ???
+given `foo`: Foo = ???
+given listOrd[T: Ordering]: Ordering[List[T]] = ???
+given listOrd(using ev: Ev): Foo = ???
+given Ordering[Int] = ???
+given Foo = ???
+given [T: Ordering]: Ordering[List[T]] = ???
+given (using ev: Ev): Foo = ???
 
-given intOrd as Ord[Int] {
-  def compare(x: Int, y: Int) =
-    if (x < y) -1 else if (x > y) +1 else 0
-}
-given listOrd[T](using ord: Ord[T]) as Ord[List[T]] {
-  def compare(xs: List[T], ys: List[T]): Int = (xs, ys) match
-    case (Nil, Nil) => 0
-    case (Nil, _) => -1
-    case (_, Nil) => +1
-    case (x :: xs1, y :: ys1) =>
-      val fst = ord.compare(x, y)
-      if (fst != 0) fst else compare(xs1, ys1)
-}
+given sumMonoid: Monoid[Int] with
+  extension (x: Int) def combine(y: Int) : Int = x + y 
+  def unit: Int = 0
 
+trait Ord[T]:
+   def compare(x: T, y: T): Int
+   extension (x: T) def < (y: T) = compare(x, y) < 0
+   extension (x: T) def > (y: T) = compare(x, y) > 0
+given intOrd: Ord[Int] with
+   def compare(x: Int, y: Int) =
+      if x < y then -1 else if x > y then +1 else 0
+given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
+   def compare(xs: List[T], ys: List[T]): Int = (xs, ys) match
+      case (Nil, Nil) => 0
+      case (Nil, _) => -1
+      case (_, Nil) => +1
+      case (x :: xs1, y :: ys1) =>
+         val fst = ord.compare(x, y)
+         if fst != 0 then fst else compare(xs1, ys1)
 
 // Classes
 class Bar :
