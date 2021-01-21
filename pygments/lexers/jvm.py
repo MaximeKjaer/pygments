@@ -318,7 +318,7 @@ class ScalaLexer(RegexLexer):
             (r'<%|=:=|<:<|<%<|>:|<:', Operator),           
 
             # Keywords
-            (u'(as|case|catch|derives|do|else|enum|export|extends|'
+            (u'(case|catch|derives|do|else|enum|export|extends|'
              u'finally|forSome|for|given|if|match|new|'
              u'requires|return|'
              u'then|throw|try|using|while|with|'
