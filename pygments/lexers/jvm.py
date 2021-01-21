@@ -381,8 +381,7 @@ class ScalaLexer(RegexLexer):
         ],
         'val': [
             (r'\s+', Text),
-            (':' + op, Punctuation),
-            (u':', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
+            (r'(?<!:):(?!:)', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
             (r'=', Operator, '#pop'),
             (op, Operator),
             (r'[(),]', Punctuation),
@@ -395,11 +394,11 @@ class ScalaLexer(RegexLexer):
             include('comments'),
             (r'\(', Punctuation, 'parameter-list'),
             (r'\[', Punctuation, 'typeparam'),
-            (r':', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
+            (r'(?<!:):(?!:)', Punctuation, ('#pop', 'type')), # Must pop in case it is abstract
             (r'\.', Punctuation), # Collective Extensions shorthand
             (r'\{', Punctuation, '#pop'),
             (r'(=)(\s+)', bygroups(Operator, Text), '#pop'), # Space to avoid matching 'def ==(that: X)'
-            (identifier, Name.Function),            
+            (identifier, Name.Function),
         ],
         'extension': [
             (r'\s+', Text),
@@ -412,7 +411,7 @@ class ScalaLexer(RegexLexer):
             include('comments'),
             (r'\(', Punctuation, 'parameter-list'),
             (r'\[', Punctuation, 'typeparam'),
-            (r':', Punctuation, 'type'),
+            (r'(?<!:):(?!:)', Punctuation, ('#pop', 'type')),
             (r'[\{=]', Punctuation, '#pop'),
             (r'\bwith\b', Keyword, '#pop'),
             (uppercased_identifier, Name.Class),
@@ -420,7 +419,7 @@ class ScalaLexer(RegexLexer):
         ],
         'parameter-list': [
             (r'\s+', Text),
-            (r':', Punctuation, 'type'),
+            (r'(?<!:):(?!:)', Punctuation, 'type'),
             (r',', Punctuation),
             (r'\)', Punctuation, '#pop'),
             (u'(implicit|using)(\\s+)(%s)(\\s*)(:)' % identifier,
