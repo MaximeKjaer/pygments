@@ -270,6 +270,12 @@ given listOrd[T](using ord: Ord[T]): Ord[List[T]] with
       case (x :: xs1, y :: ys1) =>
          val fst = ord.compare(x, y)
          if fst != 0 then fst else compare(xs1, ys1)
+trait A with
+  given ac: C
+trait B extends A with
+  given bc: C
+object O extends B with
+  val x = summon[C]
 
 // Classes
 class A

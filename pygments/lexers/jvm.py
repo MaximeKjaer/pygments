@@ -336,7 +336,7 @@ class ScalaLexer(RegexLexer):
             (r'\[', Punctuation, 'typeparam'),
             (r'[(){};,.#]', Punctuation),
 
-            (u"'%s" % idrest, Text.Symbol),
+            (u"'%s" % idrest, String.Symbol),
             (r'[fs]"""', String, 'interptriplestring'),  # interpolated strings
             (r'[fs]"', String, 'interpstring'),  # interpolated strings
             (r'raw"(\\\\|\\"|[^"])*"', String),  # raw strings
