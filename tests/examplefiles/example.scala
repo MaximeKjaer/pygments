@@ -10,6 +10,9 @@ Type[A with "user provided string" with B]
 trait :: with
 new A:
 given listOrd[T: Ordering]: Ordering[List[T]] = ???
+type Address = (Int, String)
+val xs: List[Address] = ...
+sort(xs)
 
 // Imports
 import // This is incorrect Scala but can still be highlighted correctly
