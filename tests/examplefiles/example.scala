@@ -1,25 +1,21 @@
 #!/usr/bin/scala
 
-// TODO
-type X[Y] = Y => (1 | 2, 3)
-type X[Y] = (Y, 3) => (1 | 2, 3)
-Type[A with "user provided string" with B]
-(using)
-(using  )
-(using , )
-trait :: with
-new A:
-given listOrd[T: Ordering]: Ordering[List[T]] = ???
-type Address = (Int, String)
-val xs: List[Address] = ...
-sort(xs)
+// Comments
+/* Comment block */
+/* Multi-line 
+ * comment block
+ */
+/*  /**/ /** */ /* comments within comments */ */
+/**   /* */ /** **/ **/
+// /* Commented-out comment block
+// Line comment
 
 // Imports
 import // This is incorrect Scala but can still be highlighted correctly
 import a.{x => y} // Test comment
 import a.{x => } // This is incorrect Scala but can still be highlighted correctly
 import a.{x => `test-name`}
-import a.given // This should not be highlighted as a keyword, given is only a soft keyword
+import a.given
 import a.{given a}
 import a.{x, y}
 import a._
@@ -29,6 +25,8 @@ import java.io.{File, IOException, FileNotFoundException}
 import java.io.File
 import scala.math.{given Ordering[Int]}
 import scala.math.{given Ordering[?]}
+import a.givenSomething
+import givenPackage
 
 // Exports
 export // This is incorrect Scala but can still be highlighted correctly
@@ -148,16 +146,16 @@ package object y:
 object Unicode {
     val blue = '* //red
     val stillRed = '*
-    val invalidSymbol  = '**_x //'
-    val symbolFollowedByOp = 'symbol*
     val symbolEndedWithOp  = 'symbol_*
-    val notASymbol = '1 //'
     val symbolWithDigit = 'symbol1 //'
-    val characterLit = 'x'
     val greekSymbol = 'ξφδ
     val greekSymbolDigit = 'φδφ0
     val greekSymbolWithOp = 'δφξφξ_+-
     val multiOpSymbol = '***
+    
+    val symbolFollowedByOp = 'symbol*
+    val invalidSymbol  = '**_x //'
+    val characterLit = 'x'
 }
 
 // Type aliases
@@ -204,12 +202,19 @@ def help(id: UserName | Password) = ???
 val either: Password | UserName = ???
 val both: Object & Product = ???
 
+// Inline
+inline def inline(inline x: Int): Double = ???
+inline def power(x: Double, inline n: Int): Double =
+inline if (n == 0) 1 else 2
+inline val c = 0
+
+
 // Soft keywords (should not be highlighted as keywords here)
 val open = true
 val inline = true
+inline xval
+val x = inline + 2
 (using)
-(using  )
-(using , )
 (usingSomething)
 
 // Storage modifiers
@@ -481,3 +486,12 @@ def f(x: Int, y: Int) = x match {
     case IsZero(u)     => eval(u) == 0
     case _ => 15
 }
+
+// Operators
+1 :: 2 :: Nil
+a ++ b
+a :+ b
+a +: b
+a :++ b
+a ++: b
+a + b
