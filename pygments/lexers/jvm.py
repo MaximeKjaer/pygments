@@ -372,7 +372,7 @@ class ScalaLexer(RegexLexer):
             (r'\b(catch|finally|try)\b', Keyword),
         ],
         'operators': [
-            (u'(%s{2,})(\s+)' % opchar, bygroups(Operator, Text)),
+            (u'(%s{2,})(\\s+)' % opchar, bygroups(Operator, Text)),
             (r'(<%|=:=|<:<|<%<|>:|<:)', Operator),
             (r'(==?|!=|<=|>=|<>|<|>)', Operator),
             (r'(<-|←|->|→|=>|⇒|\?|@|\|)+', Operator),
